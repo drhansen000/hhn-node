@@ -1,0 +1,19 @@
+{
+  "name": "hhn-node",
+  "version": "1.0.0",
+  "description": "This is the HH&N website, but this time in Node.js!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drhansen000/hhn-node.git"
+  },
+  "author": "Daniel Hansen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/drhansen000/hhn-node/issues"
+  },
+  "homepage": "https://github.com/drhansen000/hhn-node#readme"
+}
