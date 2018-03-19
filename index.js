@@ -3,6 +3,8 @@ const hbs = require('hbs');
 const PORT = process.env.PORT || 3000;
 var app = express();
 
+var db = require('./db');
+
 //make express's view engine utilize the 'hbs module'
 app.set('view engine', 'hbs');
 
@@ -25,10 +27,18 @@ app.get('/about', (req, res) => {
 });
 
 app.get('/bad', (req, res) => {
-    res.send({
-        errorMessage: 'Unable to handle request',
-        commonSense: 'Why would you navigate to a page that bad in its name?!'
+    var ref = db.db.ref('/person');
+    console.log('created ref object');
+    ref.once('value', (snapshot) => {
+        console.log('inside snapshot creation');
+        res.send({
+            errorMessage: 'Unable to handle request',
+            commonSense: snapshot.val()
+        });
+    }, function (error) {
+        console.log(error);
     });
+    
 });
 
 //make is so that I don't have to configure for every html page. Anything within the Public folder is visible
