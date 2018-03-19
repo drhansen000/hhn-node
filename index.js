@@ -6,8 +6,7 @@ var app = express();
 //make express's view engine utilize the 'hbs module'
 app.set('view engine', 'hbs');
 
-//make is so that I don't have to configure for every html page. Anything within the Public folder is visible
-app.use(express.static(__dirname + '/public'));
+
 
 app.get('/', (req, res) => {
     res.render('home.hbs', {
@@ -31,6 +30,9 @@ app.get('/bad', (req, res) => {
         commonSense: 'Why would you navigate to a page that bad in its name?!'
     });
 });
+
+//make is so that I don't have to configure for every html page. Anything within the Public folder is visible
+app.use(express.static(__dirname + '/public'));
 
 app.listen(PORT, () => {
     console.log('Server is listening on port: 3000');
