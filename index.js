@@ -35,8 +35,6 @@ var getCurrentDate = () => {
     return (currentDate = year + "-" + month + "-" + day);
 }
 
-app.use(express.static(__dirname + '/public'));
-
 app.get('/', (req, res) => {
     res.render('./views/home.hbs', {
         pageTitle: 'Home Page',
@@ -182,7 +180,7 @@ app.get('/remove-appointment', (req, res) => {
 });
 
 //make is so that I don't have to configure for every html page. Anything within the Public folder is visible
-//app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/public'));
 
 app.listen(PORT, () => {
     console.log('Server is listening on port: 3000');
