@@ -36,7 +36,7 @@ var getCurrentDate = () => {
 }
 
 app.get('/', (req, res) => {
-    res.render('home.hbs', {
+    res.render('./views/home.hbs', {
         pageTitle: 'Home Page',
         currentYear: new Date().getFullYear(),
         welcomeMessage: 'Welcome to the home Page!'
