@@ -20,7 +20,7 @@
             <div class="col-12 service">
                 <form action="cancelAppointment.php" method="post">
                     <h5>Service: </h5>
-                        <input type="hidden" name="serviceDate" value="' . $_SESSION['serviceDate'][$i] . '" />
+                    <input type="hidden" name="serviceDate" value="' . $_SESSION['serviceDate'][$i] . '" />
                     <input type="hidden" name="serviceTime" value="' . $_SESSION['serviceTime'][$i] . '" />
                     <input type="hidden" name="serviceType" value="' . $_SESSION['service'][$i] . '" />
                     <input type="hidden" name="serviceDetails" value="' . $_SESSION['serviceDetails'][$i] . '" />
@@ -35,6 +35,9 @@
             </div>
             <button onclick="window.location.href = '/create-appointment'" type="button">Create Future Appointment</button>
         </div>
+        <footer>
+            {{> footer}}
+        </footer>
     </div>
     <div class="col-2">
         <img class="panel-image" src="images/side-plant.png" />

@@ -18,8 +18,7 @@
         <div class="col-12">
             <h1>Edit Appointment</h1>
             <form action="appointmentEdited.php" onsubmit="return validateForm()" method="post">
-                <select name="serviceType" onchange="serviceDescription(this)" required>
-                </select>
+                <select name="serviceType" onchange="serviceDescription(this)" required></select>
                 <div id="serviceDetails" class="col-12">
                     <div class="col-2"></div>
                     <div class="col-4">
@@ -36,8 +35,7 @@
                     </div>
                     <div class="col-4">
                         Time<br />
-                        <select id="selectTimeslot" name="time" required>
-                        </select>
+                        <select id="selectTimeslot" name="time" required></select>
                     </div>
                 </div>
                 <div class="col-12">
@@ -50,6 +48,9 @@
                 </div>
             </form>
         </div>
+        <footer>
+            {{> footer}}
+        </footer>
     </div>
     <div class="col-2">
         <img class="panel-image" src="images/side-plant.png" />

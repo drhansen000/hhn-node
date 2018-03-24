@@ -78,14 +78,6 @@ app.get('/cart', (req, res) => {
     res.render('cart.hbs');
 });
 
-app.get('/about', (req, res) => {
-    //render any pages within views folder (Express checks views by default)
-    res.render('about.hbs', {
-        pageTitle: 'About Page',
-        currentYear: new Date().getFullYear()
-    });
-});
-
 /*
 * These endpoints are to view the information
 */

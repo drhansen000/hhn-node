@@ -32,7 +32,7 @@
         <div class='priceList col-6'>Total: </div>
         <div class='nameList col-6'>
             <!--I don't know why I had to do this, but just surrounding the anchor tag with a button didn't work. I wasn't able
-                To access it with CSS, unless it was inline, which we were told not to use, so...I used a form-->
+            To access it with CSS, unless it was inline, which we were told not to use, so...I used a form-->
             <form action="products.php" method="post">
                 <button class="bottomButton" type="submit">
                     Continue Browsing
@@ -46,6 +46,9 @@
                 </button>
             </form>
         </div>
+        <footer>
+            {{> footer}}
+        </footer>
     </div>
     <div class="col-2">
         <img class="panel-image" src="images/side-plant.png" />
