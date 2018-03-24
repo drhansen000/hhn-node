@@ -1,0 +1,38 @@
+.title-sec
+{
+    text-align: right;
+}
+.input-sec 
+{
+    text-align: left;
+}
+.long-box
+{
+    width: 320px;
+}
+#city-box
+{
+    width: 100px;
+}
+#state-box
+{
+    width: 50px;
+}
+#zip-box
+{
+    width: 80px;
+}
+
+.panel-image
+{
+    position: fixed;
+    height: stretch;
+    margin-left: -15px;
+    margin-right: -15px;
+    margin-top: 80px;
+    width: 16.33%;
+}
+#lookAlike
+{
+    font-size: 16px;
+}

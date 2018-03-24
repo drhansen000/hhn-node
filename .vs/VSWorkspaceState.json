@@ -2,10 +2,10 @@
   "ExpandedNodes": [
     "",
     "\\functions",
-    "\\functions\\etc",
     "\\public",
-    "\\views"
+    "\\views",
+    "\\views\\partials"
   ],
-  "SelectedNode": "\\index.js",
+  "SelectedNode": "\\functions\\.eslintrc.json",
   "PreviewInSolutionExplorer": false
 }

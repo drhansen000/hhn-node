@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css?family=Handlee" rel="stylesheet">
+    <link rel="stylesheet" href="bootstrap-css/bootstrap.min.css" />
+    <link rel="stylesheet" href="col.css" />
+    <link rel="stylesheet" href="HH&N.css" />
+    <link rel="stylesheet" href="cart.css" />
+
+    <title>HH&N Products</title>
+</head>
+<body>
+    {{> navbar}}
+    <div class="col-2">
+        <img class="panel-image" src="images/side-plant.png" />
+    </div>
+    <div id="description" class="col-8">
+        <h1>Your </h1>
+        <div class='nameList col-6'>Name of :<br /></div>
+        <div class='priceList col-6'>Price of item:<br /></div>
+        <div class='col-12 itemSection'>
+            <div class='nameList col-6'>
+                <br />
+                <button class='removeButton' onclick=removeFromCart("")>
+                    Remove Item
+                </button><br />
+            </div>
+            <div class='priceList col-6'>$<br /></div>
+        </div>
+        <div class='nameList col-6'>Number of Item(s):</div>
+        <div class='priceList col-6'>Total: </div>
+        <div class='nameList col-6'>
+            <!--I don't know why I had to do this, but just surrounding the anchor tag with a button didn't work. I wasn't able
+                To access it with CSS, unless it was inline, which we were told not to use, so...I used a form-->
+            <form action="products.php" method="post">
+                <button class="bottomButton" type="submit">
+                    Continue Browsing
+                </button>
+            </form>
+        </div>
+        <div class='priceList col-6'>
+            <form action="confirmation.php" method="post">
+                <button class="bottomButton" type="submit">
+                    Confirm Order
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="col-2">
+        <img class="panel-image" src="images/side-plant.png" />
+    </div>
+</body>
+</html>
+
+<script>
+    function removeFromCart(itemName)
+    {
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = function ()
+        {
+            if (this.readyState == 4 && this.status == 200)
+            {
+                location.reload();
+            }
+            else if (this.readyState == 4)
+            {
+                alert("Failure trying to open file to write. Status is: " + this.statusText);
+            }
+        };
+
+        httpRequest.open("POST","removeFromCart.php", true);
+        httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        httpRequest.send("itemName=" + itemName);
+    }
+</script>

@@ -1,12 +1,24 @@
 const express = require('express');
-const hbs = require('hbs');
-const PORT = process.env.PORT || 3000;
+var hbs = require('express-handlebars');
+var session = require('express-session');
+const firebase = require('firebase');
 var app = express();
 
 var db = require('./db');
 
+const PORT = process.env.PORT || 3000;
+
 //make express's view engine utilize the 'hbs module'
+
+app.engine('hbs', hbs({
+    extname: 'hbs',
+    partialsDir: [
+        //  path to your partials
+        __dirname + '/views/partials',
+    ]
+}));
 app.set('view engine', 'hbs');
+
 
 /*
 * Firebase has no reverse Snapshot function and inserts automatically in order (unless otherwise specified).
@@ -35,12 +47,35 @@ var getCurrentDate = () => {
     return (currentDate = year + "-" + month + "-" + day);
 }
 
-app.get('/', (req, res) => {
-    res.render('home.hbs', {
-        pageTitle: 'Home Page',
-        currentYear: new Date().getFullYear(),
-        welcomeMessage: 'Welcome to the home Page!'
-    });
+app.get(['/', '/offer'], (req, res) => {
+    res.render('offer.hbs');
+});
+
+app.get('/products', (req, res) => {
+    res.render('products.hbs');
+});
+
+app.get('/create-account', (req, res) => {
+    res.render('createAccount.hbs');
+});
+
+app.get('/create-appointment', (req, res) => {
+    res.render('createAppointment.hbs');
+});
+
+app.get('/login', (req, res) => {
+    res.render('login.hbs');
+});
+app.get('/purchases', (req, res) => {
+    res.render('purchases.hbs');
+});
+
+app.get('/appointments', (req, res) => {
+    res.render('appointments.hbs');
+});
+
+app.get('/cart', (req, res) => {
+    res.render('cart.hbs');
 });
 
 app.get('/about', (req, res) => {
@@ -54,129 +89,219 @@ app.get('/about', (req, res) => {
 /*
 * These endpoints are to view the information
 */
-app.get('/get-past-appointments', (req, res) => {
-    var pastAppRef = db.db.ref(`/appointment/${req.query.uid}`).orderByChild('date');
-    pastAppRef.once('value', (snapshot) => {
-        var filteredPastApp = new Array();
-        snapshot.forEach((childSnapshot) => {
-            if (childSnapshot.val().date < getCurrentDate()) {
-                filteredPastApp.push(childSnapshot);
-            }
-        });
+app.get('/past-appointments-query', (req, res) => {
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            var pastAppRef = db.db.ref(`/appointment/${user.uid}`).orderByChild('date');
+            pastAppRef.once('value', (snapshot) => {
+                var filteredPastApp = new Array();
+                snapshot.forEach((childSnapshot) => {
+                    if (childSnapshot.val().date < getCurrentDate()) {
+                        filteredPastApp.push(childSnapshot);
+                    }
+                });
 
-        filteredPastApp = reverseSnapshot(filteredPastApp);
-        res.send(filteredPastApp);
-    }).catch((e) => {
-        console.log(e);
+                filteredPastApp = reverseSnapshot(filteredPastApp);
+                res.send(filteredPastApp);
+            }).catch((e) => {
+                console.log(e);
+            });
+        } else {
+            console.log('Not signed in!');
+        }
     });
 });
 
-app.get('/get-product-history', (req, res) => {
-    var productHistoryRef = db.db.ref(`/purchase_history/${req.query.uid}`);
-    productHistoryRef.once('value', (snapshot) => {
-        var filteredPurchaseHistory = reverseSnapshot(snapshot);
-        res.send(filteredPurchaseHistory);
-    }).catch((e) => {
-        console.log(e);
+app.get('/product-history-query', (req, res) => {
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            var productHistoryRef = db.db.ref(`/purchase_history/${user.uid}`);
+            productHistoryRef.once('value', (snapshot) => {
+                var filteredPurchaseHistory = reverseSnapshot(snapshot);
+                res.send(filteredPurchaseHistory);
+            }).catch((e) => {
+                console.log(e);
+            });
+        } else {
+            console.log('Not signed in!');
+        }
     });
 });
 
-app.get('/get-future-appointments', (req, res) => {
-    var futureAppRef = db.db.ref(`/appointment/${req.query.uid}`).orderByChild('date');
-    futureAppRef.once('value', (snapshot) => {
-        var filteredFutureApp = new Array();
-        
-        snapshot.forEach((childSnapshot) => {
-            if (childSnapshot.val().date >= getCurrentDate()) {
-                filteredFutureApp.push(childSnapshot);
-            }
-        });
-        res.send(filteredFutureApp);
-    }).catch((e) => {
-        console.log(e);
+app.get('/future-appointments-query', (req, res) => {
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            var futureAppRef = db.db.ref(`/appointment/${user.uid}`).orderByChild('date');
+            futureAppRef.once('value', (snapshot) => {
+                var filteredFutureApp = new Array();
+
+                snapshot.forEach((childSnapshot) => {
+                    if (childSnapshot.val().date >= getCurrentDate()) {
+                        filteredFutureApp.push(childSnapshot);
+                    }
+                });
+                res.send(filteredFutureApp);
+            }).catch((e) => {
+                console.log(e);
+            });
+        } else {
+            console.log('Not signed in!');
+        }
     });
 });
 
-app.get('/manager-get-clients', (req, res) => {
-    var clientRef = db.db.ref('/person');
-    clientRef.once('value', (snapshot) => {
-        res.send(snapshot)
-    }).catch((e) => {
-        console.log(e);
+app.get('/manager-clients-query', (req, res) => {
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            var clientRef = db.db.ref('/person');
+            clientRef.once('value', (snapshot) => {
+                res.send(snapshot)
+            }).catch((e) => {
+                console.log(e);
+            });
+        } else {
+            console.log('Not signed in!');
+        }
     });
 });
 
-app.get('/manager-get-appointments', (req, res) => {
-    var appRef = db.db.ref('/appointment');
-    appRef.once('value', (snapshot) => {
-        res.send(snapshot)
-    }).catch((e) => {
-        console.log(e);
+app.get('/manager-appointments-query', (req, res) => {
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            var appRef = db.db.ref('/appointment');
+            appRef.once('value', (snapshot) => {
+                res.send(snapshot)
+            }).catch((e) => {
+                console.log(e);
+            });
+        } else {
+            console.log('Not signed in!');
+        }
     });
 });
 
 /*
 * These endpoints are to insert information
 */
-app.get('/confirm-purchase', (req, res) => {
-    var purchaseRef = db.db.ref(`/purchase_history/${req.query.uid}`).push({
-        picture: `${req.query.picture}`,
-        product: `${req.query.product}`
-    });
-    res.send({ status: 'ok' });
+app.get('/login-query', (req, res) => {
+    firebase.auth().signInWithEmailAndPassword(req.query.email, req.query.password)
+        .then((result) => {
+            res.send({ status: 'ok' });
+        }).catch((error) => {
+            res.send(error);
+        });
 });
 
-app.get('/create-person', (req, res) => {
-    var personRef = db.db.ref(`/person/${req.query.uid}`);
-    personRef.set({
-        name:  `${req.query.name}`,
-        email: `${req.query.email}`,
-        phone: `${req.query.phone}`
+app.get('/confirm-purchase-query', (req, res) => {
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            var purchaseRef = db.db.ref(`/purchase_history/${user.uid}`).push({
+                picture: `${req.query.picture}`,
+                product: `${req.query.product}`
+            });
+            res.send({ status: 'ok' });
+        } else {
+            console.log('Not signed in!');
+        }
     });
-    res.send({ status: 'ok' });
 });
 
-app.get('/create-appointment', (req, res) => {
-    var appRef = db.db.ref(`/appointment/${req.query.uid}`).push({
-        date:    `${req.query.date}`,
-        info:    `${req.query.info}`,
-        service: `${req.query.service}`,
-        time:    `${req.query.time}`
+app.get('/create-user-query', (req, res) => {
+    var email = "trial04@example.com";
+    var password = "password";
+    var name = "John Doe";
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+        .then((userRecord) => {
+            console.log("Successfully created new user:", userRecord.displayName);
+
+            res.send({ status : 'ok' });
+        })
+        .catch((error) => {
+            console.log(error.message);
+            res.send(error.message);
+        });
+});
+
+app.get('/create-person-query', (req, res) => {
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            var personRef = db.db.ref(`/person/${user.uid}`).set({
+                name: `Steve`,
+                phone: `1234`,
+                email: `${user.email}`
+            });
+            res.send({ status: 'ok' });
+        } else {
+            // No user is signed in.
+        }
     });
-    res.send({ status: 'ok' });
+});
+
+app.get('/create-appointment-query', (req, res) => {
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            var appRef = db.db.ref(`/appointment/${user.uid}`).push({
+                date: `${req.query.date}`,
+                info: `${req.query.info}`,
+                service: `${req.query.service}`,
+                time: `${req.query.time}`
+            });
+            res.send({ status: 'ok' });
+        } else {
+            console.log('Not signed in!');
+        }
+    });
 });
 
 /*
 * These endpoints are to update information. As of now, they actually overwrite the whole
 * object, but since they're small, the user won't notice any performance decrease.
 */
-app.get('/update-appointment', (req, res) => {
-    var appRef = db.db.ref(`/appointment/${req.query.uid}/${req.query.tokenId}`);
-    appRef.set({
-        date:    `${req.query.date}`,
-        info:    `${req.query.info}`,
-        service: `${req.query.service}`,
-        time:    `${req.query.time}`
+app.get('/update-appointment-query', (req, res) => {
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            var appRef = db.db.ref(`/appointment/${user.uid}/${req.query.tokenId}`);
+            appRef.set({
+                date: `${req.query.date}`,
+                info: `${req.query.info}`,
+                service: `${req.query.service}`,
+                time: `${req.query.time}`
+            });
+            res.send({ status: 'ok' });
+        } else {
+            console.log('Not signed in!');
+        }
     });
-    res.send({ status: 'ok' });
 });
 
-app.get('/manager-update-client', (req, res) => {
-    var personRef = db.db.ref(`/person/${req.query.uid}`);
-    personRef.set({
-        name:  `${req.query.name}`,
-        email: `${req.query.email}`,
-        phone: `${req.query.phone}`
+app.get('/manager-update-client-query', (req, res) => {
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            var personRef = db.db.ref(`/person/${user.uid}`);
+            personRef.set({
+                name: `${req.query.name}`,
+                email: `${req.query.email}`,
+                phone: `${req.query.phone}`
+            });
+            res.send({ status: 'ok' });
+        } else {
+            console.log('Not signed in!');
+        }
     });
-    res.send({status: 'ok'});
 });
 
 /*
 * This endpoint is to remove information
 */
-app.get('/remove-appointment', (req, res) => {
-    db.db.ref(`/appointment/${req.query.uid}/${req.query.tokenId}`).remove();
-    res.send({ status: 'ok' });
+app.get('/remove-appointment-query', (req, res) => {
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            db.db.ref(`/appointment/${req.query.uid}/${user.uid}`).remove();
+            res.send({ status: 'ok' });
+        } else {
+            console.log('Not signed in!');
+        }
+    });
 });
 
 //make is so that I don't have to configure for every html page. Anything within the Public folder is visible

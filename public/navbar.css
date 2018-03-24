@@ -1,0 +1,17 @@
+.navbar-brand
+{
+    margin: 0;
+    padding: 0;
+    padding-right: 10px;
+    width: 75px;
+    height: 60px;
+}
+li
+{
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+}
+#welcome:hover {
+    background: black;
+}

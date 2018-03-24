@@ -1,0 +1,32 @@
+.product-image
+{
+    width: 80%;
+}
+.left
+{
+    text-align: left;
+}
+.right
+{
+    text-align: right;
+}
+.panel-image
+{
+    position: fixed;
+    height: stretch;
+    margin-left: -15px;
+    margin-right: -15px;
+    margin-top: 80px;
+    width: 16.33%;
+}
+.product-item
+{
+    border-color: gray;
+    border-bottom-style: solid;
+    border-top-style: solid;
+}
+p
+{
+    font-size: 18px;
+}
+

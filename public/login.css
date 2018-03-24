@@ -1,0 +1,34 @@
+.panel-image
+{
+    position: fixed;
+    height: stretch;
+    margin-left: -15px;
+    margin-right: -15px;
+    margin-top: 80px;
+    width: 16.33%;
+}
+hr {
+    border-color: white;
+}
+#signupLink {
+    text-decoration: underline;
+}
+#signupLink:hover {
+    color: limegreen;
+}
+body {
+    font-size: 20px;
+}
+button {
+    font-size: 18px;
+}
+input {
+    font-size: 15px;
+    width: 300px;
+}
+#errorMessage {
+    visibility: hidden;
+}
+#errorMessage, #errorStar1, #errorStar2 {
+    color: red;
+}

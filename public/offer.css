@@ -1,0 +1,9 @@
+.panel-image
+{
+    position: fixed;
+    height: stretch;
+    margin-left: -15px;
+    margin-right: -15px;
+    margin-top: 80px;
+    width: 16.33%;
+}

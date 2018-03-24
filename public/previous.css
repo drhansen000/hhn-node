@@ -1,0 +1,22 @@
+.panel-image {
+    position: fixed;
+    height: stretch;
+    margin-left: -15px;
+    margin-right: -15px;
+    margin-top: 80px;
+    width: 16.33%;
+}
+.product-item {
+    border-color: gray;
+    border-bottom-style: solid;
+    border-top-style: solid;
+}
+.product-image {
+    width: 80%;
+}
+.product-spec {
+    text-align: left;
+}
+.product-spec, .service {
+    font-size: 20px;
+}

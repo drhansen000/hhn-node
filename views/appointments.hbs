@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css?family=Handlee" rel="stylesheet">
+    <link rel="stylesheet" href="bootstrap-css/bootstrap.min.css" />
+    <link rel="stylesheet" href="col.css" />
+    <link rel="stylesheet" href="HH&N.css" />
+    <link rel="stylesheet" href="future.css" />
+    <title>HH&N Future Appointments</title>
+</head>
+<body>
+    {{> navbar}}
+    <div class="col-2">
+        <img class="panel-image" src="images/side-plant.png" />
+    </div>
+    <div id="description" class="col-8">
+        <div class="col-12">
+            <h1>Future Appointments</h1>
+            <div class="col-12 service">
+                <form action="cancelAppointment.php" method="post">
+                    <h5>Service: </h5>
+                        <input type="hidden" name="serviceDate" value="' . $_SESSION['serviceDate'][$i] . '" />
+                    <input type="hidden" name="serviceTime" value="' . $_SESSION['serviceTime'][$i] . '" />
+                    <input type="hidden" name="serviceType" value="' . $_SESSION['service'][$i] . '" />
+                    <input type="hidden" name="serviceDetails" value="' . $_SESSION['serviceDetails'][$i] . '" />
+                    <input type="hidden" name="appointmentId" value="' . $_SESSION['appointmentId'][$i] . '" />
+                    Planned for
+                    at<br />
+                    Stylist<br />
+                    Cost $<br>
+                    <button type='submit' class='cancelButton'>Cancel</button>
+                    <button type='submit' formaction='editAppointment' class='editButton'>Edit</button>
+                </form>
+            </div>
+            <button onclick="window.location.href = '/create-appointment'" type="button">Create Future Appointment</button>
+        </div>
+    </div>
+    <div class="col-2">
+        <img class="panel-image" src="images/side-plant.png" />
+    </div>
+</body>
+</html>
