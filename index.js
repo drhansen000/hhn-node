@@ -188,8 +188,9 @@ app.get('/confirm-purchase-query', (req, res) => {
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             var purchaseRef = db.db.ref(`/purchase_history/${user.uid}`).push({
-                picture: `${req.query.picture}`,
-                product: `${req.query.product}`
+                product: `${req.query.name}`,
+                price: `${req.query.price}`,
+                picture: `${req.query.picture}`
             });
             res.send({ status: 'ok' });
         } else {

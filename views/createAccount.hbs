@@ -74,7 +74,8 @@
             if (this.readyState == 4 && this.status == 200)
             {
                 if (this.responseText == true) {
-                    window.location.href = "accountCreated.php";
+                    var accountCreatedMessage = '<h1>Account Created</h1><p>Please log in with your new credentials.</p>'
+                        document.getElementById('description').innerHTML = accountCreatedMessage;
                 } else {
                     document.getElementById("errorMessage").style.visibility = "visible";
                     document.getElementById("errorMessage").innerHTML = this.responseText;
