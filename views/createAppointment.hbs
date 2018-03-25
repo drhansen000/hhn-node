@@ -17,21 +17,43 @@
     <div id="description" class="col-8">
         <div class="col-12">
             <h1>Create an Appointment</h1>
-            <form action="appointmentCreated.php" onsubmit="return validateForm()" method="post">
-                <select name="serviceType" onchange="serviceDescription(this)" required>
-                    <option>Men's cut</option>
+            <form action="/create-appointment-query" onsubmit="return validateForm()" method="get">
+                <select id="serviceSelector" onchange="serviceDescription()" required>
+                    <option value="0">Men's cut</option>
+                    <option value="1">Women's cut</option>
+                    <option value="2">Child's cut</option>
+                    <option value="3">Color</option>
+                    <option value="4">Touch-up</option>
+                    <option value="5">Deep condition and scalp massage</option>
+                    <option value="6">Makeup</option>
+                    <option value="7">Manicure</option>
+                    <option value="8">Pedicure</option>
+                    <option value="9">Acrylic</option>
+                    <option value="10">Perm</option>
+                    <option value="11">Relaxer</option>
+                    <option value="12">Skin</option>
+                    <option value="13">Brow wax</option>
+                    <option value="14">Upper lip wax</option>
+                    <option value="15">Cheek wax</option>
+                    <option value="16">Chin wax</option>
+                    <option value="17">Ear wax</option>
+                    <option value="18">Nose wax</option>
+                    <option value="19">Full face wax</option>
                 </select>
                 <div id="serviceDetails" class="col-12">
+                    <input type="hidden" name="service" value="Men's cut" />
+                    <input type="hidden" name="duration" value="60" />
+                    <input type="hidden" name="cost" value="30" />
                     <div class="col-2"></div>
-                    <div class="col-4"><u>Service Name</u><br />Men's cut</div>
-                    <div class="col-2"><u>Duration</u><br />60 minutes</div>
-                    <div class="col-1"><u>Cost</u><br />$30</div>
+                    <div class="col-4"><u>Service Name</u><br />Men's cut</span></div>
+                    <div class="col-2"><u>Duration</u><br />60</span> minutes</div>
+                    <div class="col-1"><u>Cost</u><br />$30</span></div>
                 </div>
                 <div class="col-12">
                     <div class="col-2"></div>
                     <div class="col-4">
                         Date<br />
-                        <input style="width: 150px;" id="appointmentDate" type="date" name="date" required>
+                        <input style="width: 150px;" id="appointmentDate" type="date" name="date" onchange="updateTimes()" required>
                     </div>
                     <div class="col-4">
                         Time<br />
@@ -75,15 +97,24 @@
 </html>
 
 <script>
-    function serviceDescription(serviceId)
+    function serviceDescription()
     {
+        var serviceId = document.getElementById('serviceSelector').value;
+        console.log(serviceId);
         var httpRequest = new XMLHttpRequest();
         httpRequest.onreadystatechange = function ()
         {
             if (this.readyState == 4 && this.status == 200)
             {
-                //change number of items in navbar
-                document.getElementById("serviceDetails").innerHTML = this.responseText;
+                var serviceObj = JSON.parse(this.responseText);
+                var serviceInformation = `<input type="hidden" name="service" value="${serviceObj.service}" />
+                                         <input type="hidden" name="duration" value="${serviceObj.duration}" />
+                                         <input type="hidden" name="cost" value="${serviceObj.cost}" />
+                                         <div class="col-2"></div>
+                                         <div class="col-4"><u>Service Name</u><br />${serviceObj.service}</div>
+                                         <div class="col-2"><u>Duration</u><br />${serviceObj.duration} minutes</div>
+                                         <div class="col-1"><u>Cost</u><br />$${serviceObj.cost}</div>`;
+                document.getElementById("serviceDetails").innerHTML = serviceInformation;
             }
             else if (this.readyState == 4)
             {
@@ -91,10 +122,9 @@
             }
         };
 
-        httpRequest.open("POST","displayService.php", true);
+        httpRequest.open("GET", `/services-query?serviceId=${serviceId}`, true);
         //this is required for post method only
-        httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        httpRequest.send("serviceId=" + serviceId.value);
+        httpRequest.send();
     }
 
     function validateForm()
@@ -115,6 +145,41 @@
         else
         {
             return true;
+        }
+    }
+
+    function updateTimes() {
+        var appointmentDate = new Date(document.getElementById("appointmentDate").value);
+        var timeSlots;
+        if (appointmentDate.getDay() == 6) {
+            timeSlots = '<option> Closed </option>';
+            document.getElementById('selectTimeslot').innerHTML = timeSlots;
+        } else if (appointmentDate.getDay() == 5) {
+            timeSlots = `<option value="9:00">9:00 am </option>
+                        <option value= "9:30" > 9:30 am</option>
+                        <option value="10:00">10:00 am</option>
+                        <option value="10:30">10:30 am</option>
+                        <option value="11:00">11:00 am</option>
+                        <option value="11:30">11:30 am</option>`;
+            document.getElementById('selectTimeslot').innerHTML = timeSlots;
+        } else {
+            timeSlots = `<option value="9:00">9:00 am</option>
+                        <option value= "9:30" > 9:30 am</option>
+                        <option value="10:00">10:00 am</option>
+                        <option value="10:30">10:30 am</option>
+                        <option value="11:00">11:00 am</option>
+                        <option value="11:30">11:30 am</option>
+                        <option value="12:00">12:00 pm</option>
+                        <option value="12:30">12:30 pm</option>
+                        <option value="13:00">1:00 pm</option>
+                        <option value="13:30">1:30 pm</option>
+                        <option value="14:00">2:00 pm</option>
+                        <option value="14:30">2:30 pm</option>
+                        <option value="15:00">3:00 pm</option>
+                        <option value="15:30">3:30 pm</option>
+                        <option value="16:00">4:00 pm</option>
+                        <option value="16:30">4:30 pm</option>`;
+            document.getElementById('selectTimeslot').innerHTML = timeSlots;
         }
     }
 </script>

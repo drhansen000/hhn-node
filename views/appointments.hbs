@@ -17,23 +17,13 @@
     <div id="description" class="col-8">
         <div class="col-12">
             <h1>Future Appointments</h1>
-            <div class="col-12 service">
-                <form action="cancelAppointment.php" method="post">
-                    <h5>Service: </h5>
-                    <input type="hidden" name="serviceDate" value="' . $_SESSION['serviceDate'][$i] . '" />
-                    <input type="hidden" name="serviceTime" value="' . $_SESSION['serviceTime'][$i] . '" />
-                    <input type="hidden" name="serviceType" value="' . $_SESSION['service'][$i] . '" />
-                    <input type="hidden" name="serviceDetails" value="' . $_SESSION['serviceDetails'][$i] . '" />
-                    <input type="hidden" name="appointmentId" value="' . $_SESSION['appointmentId'][$i] . '" />
-                    Planned for
-                    at<br />
-                    Stylist<br />
-                    Cost $<br>
-                    <button type='submit' class='cancelButton'>Cancel</button>
-                    <button type='submit' formaction='editAppointment' class='editButton'>Edit</button>
-                </form>
+            <div id="future-appointments-content" class="col-12 service">
+                <p>You are not logged in!</p>
             </div>
-            <button onclick="window.location.href = '/create-appointment'" type="button">Create Future Appointment</button>
+            <h1>Past Appointments</h1>
+            <div id="past-appointments-content" class="col-12 service">
+                <p>You are not logged in!</p>
+            </div>
         </div>
         <footer>
             {{> footer}}
@@ -44,3 +34,75 @@
     </div>
 </body>
 </html>
+<script>
+    window.addEventListener("load", function displayFutureAppointments() {
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status === 200) {
+                var futureAppointmentsObj = JSON.parse(this.responseText);
+                if (futureAppointmentsObj.length > 0) {
+                    var futureAppointmentsMessage = '';
+                    for (var i = 0; i < futureAppointmentsObj.length; i++) {
+                        futureAppointmentsMessage += '<div class="col-12 service">';
+                        futureAppointmentsMessage += `<form action="/remove-appointment-query" method="get">`;
+                        futureAppointmentsMessage += `<h5>Service: ${futureAppointmentsObj[i].service.name}</h5>`;
+                        futureAppointmentsMessage += `<input type="hidden" name="serviceDate" value="${futureAppointmentsObj[i].date}"/>`;
+                        futureAppointmentsMessage += `<input type="hidden" name="serviceTime" value="${futureAppointmentsObj[i].time}"/>`;
+                        futureAppointmentsMessage += `<input type="hidden" name="serviceType" value="${futureAppointmentsObj[i].service.name}"/>`;
+                        futureAppointmentsMessage += `<input type="hidden" name="serviceDetails" value="${futureAppointmentsObj[i].info}"/>`;
+                        futureAppointmentsMessage += `<input type="hidden" name="appointmentId" value="${i}"/>`;
+                        futureAppointmentsMessage += `Planned for ${futureAppointmentsObj[i].date}`;
+                        futureAppointmentsMessage += ` at ${futureAppointmentsObj[i].time}<br/>`;
+                        futureAppointmentsMessage += `Stylist: Karli Hansen<br/>`;
+                        futureAppointmentsMessage += `Cost: $${futureAppointmentsObj[i].service.cost}<br>`;
+                        futureAppointmentsMessage += "<button type='submit' class='cancelButton'>Cancel</button>";
+                        futureAppointmentsMessage += "</form></div>";
+                    }
+                    futureAppointmentsMessage += `<button onclick="window.location.href = '/create-appointment'" type="button">Create Future Appointment</button>`;
+                    document.getElementById('future-appointments-content').innerHTML = futureAppointmentsMessage;
+                } else if (futureAppointmentsObj.length === 0) {
+                    futureAppointmentsMessage = `You don't have any future appointments! :<<br>
+                                                <button onclick="window.location.href='/create-appointment'" type="button">
+                                                Create Future Appointment</button>`;
+                    document.getElementById('future-appointments-content').innerHTML = futureAppointmentsMessage;
+                } else {
+
+                }
+            }
+            else if (this.readyState == 4) {
+            }
+        };
+
+        httpRequest.open("GET", '/future-appointments-query', true);
+        httpRequest.send();
+    }, false);
+
+    window.addEventListener("load", function displayPastAppointments() {
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status === 200) {
+                var pastAppointmentsObj = JSON.parse(this.responseText);
+                if (pastAppointmentsObj.length > 0) {
+                    var pastAppointmentsMessage = '';
+                    for (var i = 0; i < pastAppointmentsObj.length; i++) {
+                        pastAppointmentsMessage += '<div class="col-12 service">';
+                        pastAppointmentsMessage += `<h5>Service: ${pastAppointmentsObj[i].service.name}</h5>`;
+                        pastAppointmentsMessage += `Received on ${pastAppointmentsObj[i].date}`;
+                        pastAppointmentsMessage += ` at ${pastAppointmentsObj[i].time}<br/>`;
+                        pastAppointmentsMessage += `Stylist: Karli Hansen<br/>`;
+                    }
+                    document.getElementById('past-appointments-content').innerHTML = pastAppointmentsMessage;
+                } else if (pastAppointmentsObj.length === 0) {
+                    document.getElementById('past-appointments-content').innerHTML = "You haven't had any past appointments! :<";
+                } else {
+
+                }
+            }
+            else if (this.readyState == 4) {
+            }
+        };
+
+        httpRequest.open("GET", '/past-appointments-query', true);
+        httpRequest.send();
+    }, false);
+</script>

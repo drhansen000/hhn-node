@@ -59,9 +59,13 @@ app.get('/create-account', (req, res) => {
     res.render('createAccount.hbs');
 });
 
-app.get('/create-appointment', (req, res) => {
+app.get(['/create-appointment', '/update-appointment'], (req, res) => {
     res.render('createAppointment.hbs');
 });
+
+//app.get('/update-appointment', (req, res) => {
+//    res.render('editAppointment.hbs');
+//});
 
 app.get('/login', (req, res) => {
     res.render('login.hbs');
@@ -132,7 +136,7 @@ app.get('/future-appointments-query', (req, res) => {
                         filteredFutureApp.push(childSnapshot);
                     }
                 });
-                res.send(filteredFutureApp);
+                res.json(filteredFutureApp);
             }).catch((e) => {
                 console.log(e);
             });
@@ -140,6 +144,16 @@ app.get('/future-appointments-query', (req, res) => {
             console.log('Not signed in!');
         }
     });
+});
+
+app.get('/services-query', (req, res) => {
+    console.log(req.query.serviceId);
+    var serviceRef = db.db.ref(`/service/${req.query.serviceId}`);
+    serviceRef.once('value', (snapshot) => {
+        res.send(snapshot);
+    }).catch((e) => {
+        console.log(e);
+        });
 });
 
 app.get('/manager-clients-query', (req, res) => {
@@ -176,12 +190,21 @@ app.get('/manager-appointments-query', (req, res) => {
 * These endpoints are to insert information
 */
 app.get('/login-query', (req, res) => {
-    firebase.auth().signInWithEmailAndPassword(req.query.email, req.query.password)
-        .then((result) => {
-            res.send({ status: 'ok' });
-        }).catch((error) => {
-            res.send(error);
-        });
+            firebase.auth().signInWithEmailAndPassword(req.query.email, req.query.password)
+                .then((result) => {
+                    res.send({ status: 'ok' });
+                }).catch((error) => {
+                    res.send(error);
+                });
+});
+
+app.get('/logout-query', (req, res) => {
+    firebase.auth().signOut().then(function () {
+        res.render('login.hbs');
+    }, function (error) {
+        // An error happened.
+        console.log(error.message);
+    });
 });
 
 app.get('/confirm-purchase-query', (req, res) => {
@@ -233,13 +256,18 @@ app.get('/create-person-query', (req, res) => {
 app.get('/create-appointment-query', (req, res) => {
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
+            console.log(req.query);
             var appRef = db.db.ref(`/appointment/${user.uid}`).push({
                 date: `${req.query.date}`,
                 info: `${req.query.info}`,
-                service: `${req.query.service}`,
+                service: {
+                    name: `${req.query.service}`,
+                    cost: `${req.query.cost}`,
+                    duration: `${req.query.duration}`
+            },
                 time: `${req.query.time}`
             });
-            res.send({ status: 'ok' });
+            res.render('appointments.hbs');
         } else {
             console.log('Not signed in!');
         }
@@ -289,8 +317,18 @@ app.get('/manager-update-client-query', (req, res) => {
 app.get('/remove-appointment-query', (req, res) => {
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
-            db.db.ref(`/appointment/${req.query.uid}/${user.uid}`).remove();
-            res.send({ status: 'ok' });
+            //var removeRef = db.db.ref(`/appointment/${user.uid}`);
+            //var removeQuery = removeRef.orderByChild('date').equalTo(req.query.serviceDate);
+            //removeQuery.once('child_added', function (snapshot) {
+            //    snapshot.ref.remove();
+            //});
+            let ref = firebase.database().ref(`/appointment/${user.uid}`);
+            ref.orderByChild('date').equalTo(req.query.serviceDate).once('value', snapshot => {
+                let updates = {};
+                snapshot.forEach(child => updates[child.key] = null);
+                ref.update(updates);
+            });
+            res.render('appointments.hbs');
         } else {
             console.log('Not signed in!');
         }

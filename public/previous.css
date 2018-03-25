@@ -17,6 +17,6 @@
 .product-spec {
     text-align: left;
 }
-.product-spec, .service {
+.product-spec, .service, #purchases-content {
     font-size: 20px;
 }

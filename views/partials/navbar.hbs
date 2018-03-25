@@ -53,7 +53,8 @@
         </div>
         <div>
             <ul class="nav navbar-nav navbar-right">
-                <li class="nav-item">
+                <li id="loginBtn" class="nav-item">
+                    <a class="nav-link" href="/login">Login</a>
                 </li>
                 <li class="nav-item ">
                     <a id="number-in-cart" class="nav-link" href="/cart"
@@ -75,4 +76,15 @@
             document.getElementById('number-in-cart').innerHTML = `${cartObject.length} In Cart`;
         }
     }
+
+    //window.addEventListener("load", () => {
+    //    const firebase = require('firebase');
+    //    firebase.auth().onAuthStateChanged(function (user) {
+    //    if (user) {
+    //        document.getElementById('loginBtn').innerHTML = `<a class="nav-link" href="logout">Logout/SignUp</a>`;
+    //    } else {
+    //        document.getElementById('loginBtn').innerHTML = `<a class="nav-link" href="/login">Login/SignUp</a>`;
+    //    }
+    //});
+    //}, false);
 </script>

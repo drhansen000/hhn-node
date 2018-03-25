@@ -1,11 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\functions",
     "\\public",
     "\\views",
     "\\views\\partials"
   ],
-  "SelectedNode": "\\functions\\.eslintrc.json",
+  "SelectedNode": "\\views\\login.hbs",
   "PreviewInSolutionExplorer": false
 }
