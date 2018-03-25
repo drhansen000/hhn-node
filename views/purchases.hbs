@@ -15,8 +15,8 @@
         <img class="panel-image" src="images/side-plant.png" />
     </div>
     <div id="description" class="col-8">
-        <div class="col-12">
-            <h1>Items Purchased</h1>
+        <h1>Items Purchased</h1>
+        <div id="purchases-content" class="col-12">
             <div class="col-12 product-item">
                 <div class="col-3"><img class="product-image" src=""></div>
                 <div class="product-spec col-9 left">
@@ -40,7 +40,17 @@
         var httpRequest = new XMLHttpRequest();
         httpRequest.onreadystatechange = function () {
             if (this.readyState == 4 && this.status === 200) {
-                document.getElementById('description').innerHTML = this.responseText;
+                var purchasesObj = JSON.parse(this.responseText);
+                console.log(purchasesObj);
+                var purchasesMessage = '';
+                for (var i = 0; i < purchasesObj.length; i++) {
+                    purchasesMessage += `<div class="col-12 product-item" >`;
+                    purchasesMessage += `<div class="col-3"><img class="product-image" src="${purchasesObj[i].picture}"></div>`;
+                    purchasesMessage += `<div class="product-spec col-9 left">`;
+                    purchasesMessage += `<h5>${purchasesObj[i].product}</h5>`;
+                    purchasesMessage += `<br /></div></div>`;
+                }
+                document.getElementById('purchases-content').innerHTML = purchasesMessage;
             }
             else if (this.readyState == 4) {
             }
