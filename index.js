@@ -75,10 +75,6 @@ app.get(['/create-appointment', '/update-appointment'], (req, res) => {
     loggedIn(res, 'createAppointment.hbs');
 });
 
-//app.get('/update-appointment', (req, res) => {
-//    res.render('editAppointment.hbs');
-//});
-
 app.get('/login', (req, res) => {
     loggedIn(res, 'login.hbs');
 });
@@ -97,6 +93,24 @@ app.get('/cart', (req, res) => {
 /*
 * These endpoints are to view the information
 */
+app.post('/login-query', (req, res) => {
+    firebase.auth().signInWithEmailAndPassword(req.body.email, req.body.password)
+        .then(() => {
+            res.status(200).send({ status: 'ok' });
+        })
+        .catch((error) => {
+            res.send({ status: 'invalid' });
+        });
+});
+
+app.get('/logout-query', (req, res) => {
+    firebase.auth().signOut().then(function () {
+        res.render('login.hbs');
+    }, function (error) {
+        console.log(error.message);
+    });
+});
+
 app.get('/past-appointments-query', (req, res) => {
     var user = firebase.auth().currentUser;
 
@@ -183,24 +197,7 @@ app.get('/manager-appointments-query', (req, res) => {
 /*
 * These endpoints are to insert information
 */
-app.post('/login-query', (req, res) => {
-    firebase.auth().signInWithEmailAndPassword(req.body.email, req.body.password)
-        .then(() => {
-            res.status(200).send({status: 'ok' });
-        })
-        .catch((error) => {
-            res.send({ status: 'invalid' });
-        });
-});
 
-app.get('/logout-query', (req, res) => {
-    firebase.auth().signOut().then(function () {
-        res.render('login.hbs');
-    }, function (error) {
-        // An error happened.
-        console.log(error.message);
-    });
-});
 
 app.get('/confirm-purchase-query', (req, res) => {
     var user = firebase.auth().currentUser;
@@ -259,7 +256,7 @@ app.get('/create-appointment-query', (req, res) => {
             },
             time: `${req.query.time}`
         });
-        res.render('appointments.hbs');
+        res.render('appointments.hbs', { loggedIn: true });
     }
 });
 
@@ -300,11 +297,6 @@ app.get('/manager-update-client-query', (req, res) => {
 * This endpoint is to remove information
 */
 app.get('/remove-appointment-query', (req, res) => {
-            //var removeRef = db.db.ref(`/appointment/${user.uid}`);
-            //var removeQuery = removeRef.orderByChild('date').equalTo(req.query.serviceDate);
-            //removeQuery.once('child_added', function (snapshot) {
-            //    snapshot.ref.remove();
-            //});
     var user = firebase.auth().currentUser;
 
     if (user) {
@@ -314,7 +306,7 @@ app.get('/remove-appointment-query', (req, res) => {
             snapshot.forEach(child => updates[child.key] = null);
             ref.update(updates);
         });
-        res.render('appointments.hbs');
+        res.render('appointments.hbs', { loggedIn: true });
     }
 });
 
