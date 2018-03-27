@@ -69,10 +69,6 @@
                 //change number of items in navbar
                 document.getElementById("serviceDetails").innerHTML = this.responseText;
             }
-            else if (this.readyState == 4)
-            {
-                alert("Failure trying to open file to write. Status is: " + this.statusText);
-            }
         };
 
         httpRequest.open("POST","displayService.php", true);

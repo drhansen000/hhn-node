@@ -29,7 +29,7 @@
         <hr />
         <div class="col-12">
             <h3>Don't have an account?</h3>
-            <a id="signupLink" href="signup.php">
+            <a id="signupLink" href="/create-account">
                 Create a new account
             </a>
         </div>
@@ -44,5 +44,25 @@
 </html>
 
 <script>
+    function login() {
+        var email    = document.getElementById('emailInput').value;
+        var password = document.getElementById('passwordInput').value;
 
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var queryStatus = JSON.parse(this.responseText);
+                if (queryStatus.status === 'ok') {
+                    window.location.href = "/appointments";
+                } else {
+                    document.getElementById("errorMessage").style.visibility = "visible";
+                }
+            }
+        };
+
+        httpRequest.open("POST", '/login-query',true);
+        //this is required for post method only
+        httpRequest.setRequestHeader('Content-Type', 'application/json');
+        httpRequest.send(JSON.stringify({email: email, password: password }));
+    }
 </script>

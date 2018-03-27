@@ -17,7 +17,7 @@
     <div id="description" class="col-8">
         <h1>Create your account</h1>
         <p id="errorMessage"></p>
-        <form action="accountCreated.php" method="post" onsubmit="return checkPasswordContent()">
+        <form action="javascript:createAccount()" method="post" onsubmit="return checkPasswordContent()">
             <p>Full Name</p>
             <div class="col-12">
                 <input type="text" id="userName" name="userName" required />
@@ -51,48 +51,56 @@
 </html>
 
 <script>
-    function passwordVerify()
+    function createAccount()
     {
-        var httpRequest = new XMLHttpRequest();
-        var userName  = document.getElementById("userName").value;
-        var userEmail = document.getElementById("userEmail").value;
-        var userPassword = document.getElementById("userPassword").value;
-        var userVerify = document.getElementById("userVerify").value;
+        var httpRequest    = new XMLHttpRequest();
+        var name           = document.getElementById("userName").value;
+        var email          = document.getElementById("userEmail").value;
+        var password       = document.getElementById("userPassword").value;
+        var passwordVerify = document.getElementById("userVerify").value;
         if (document.getElementById("userPhone").value)
         {
-            var userPhone = document.getElementById("userPhone").value;
+            var phone = document.getElementById("userPhone").value;
         }
         else
         {
-            var userPhone = " ";
+            var phone = " ";
         }
-
-
-
         httpRequest.onreadystatechange = function ()
         {
             if (this.readyState == 4 && this.status == 200)
             {
-                if (this.responseText == true) {
-                    var accountCreatedMessage = '<h1>Account Created</h1><p>Please log in with your new credentials.</p>'
-                        document.getElementById('description').innerHTML = accountCreatedMessage;
+                var queryStatus = JSON.parse(this.responseText);
+                if (queryStatus.status === 'ok') {
+                    createPerson(name, email, phone);
                 } else {
                     document.getElementById("errorMessage").style.visibility = "visible";
-                    document.getElementById("errorMessage").innerHTML = this.responseText;
+                    document.getElementById("errorMessage").innerHTML = queryStatus.error;
                     document.getElementById("errorStar1").innerHTML = ' *';
                     document.getElementById("errorStar2").innerHTML = ' *';
                 }
-            }
-            else if (this.readyState == 4)
-            {
-                alert("Failure trying to open file to write. Status is: " + this.statusText);
+            } 
+        };
+        httpRequest.open('POST','/create-user-query', true);
+        httpRequest.setRequestHeader('Content-Type', 'application/json');
+        httpRequest.send(JSON.stringify({ email: email, password: password }));
+    }
+
+    function createPerson(name, email, phone) {
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var queryStatus = JSON.parse(this.responseText);
+                if (queryStatus.status === 'ok') {
+                    window.location.href = "/services";
+                } 
             }
         };
-
-        httpRequest.open("POST","createAccount.php", true);
-        httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        httpRequest.send("userName=" + encodeURIComponent(userName) + "&userEmail=" + encodeURIComponent(userEmail) + "&userPassword=" + encodeURIComponent(userPassword) + "&userVerify=" + encodeURIComponent(userVerify) + "&userPhone=" + encodeURIComponent(userPhone));
+        httpRequest.open('POST', '/create-person-query', true);
+        httpRequest.setRequestHeader('Content-Type', 'application/json');
+        httpRequest.send(JSON.stringify({ email: email, name: name, phone: phone }));
     }
+
     function checkPasswordContent()
     {
         var userPassword = document.getElementById("userPassword").value;
@@ -100,13 +108,6 @@
         if (userPassword !== userVerify)
         {
             document.getElementById("errorMessage").innerHTML = "Password does not match verification";
-            document.getElementById("errorStar1").innerHTML = ' *';
-            document.getElementById("errorStar2").innerHTML = ' *';
-            return false;
-        }
-        else if (userPassword.length < 7)
-        {
-            document.getElementById("errorMessage").innerHTML = "Password must be atleast 7 characters long";
             document.getElementById("errorStar1").innerHTML = ' *';
             document.getElementById("errorStar2").innerHTML = ' *';
             return false;

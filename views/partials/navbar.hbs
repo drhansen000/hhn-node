@@ -15,7 +15,7 @@
             <ul class="navbar-nav">
                 <img class="navbar-brand" alt="HH&N Logo" src="images/green-black-logo.png" />
                 <li class="nav-item ">
-                    <a class="nav-link" href="/offer">Services</a>
+                    <a class="nav-link" href="/services">Services</a>
                 </li>
                 <div class="btn-group">
                     <li class="nav-item ">
@@ -54,7 +54,12 @@
         <div>
             <ul class="nav navbar-nav navbar-right">
                 <li id="loginBtn" class="nav-item">
+                    {{#if loggedIn}}
+                    <a class="nav-link" href="/logout-query">Logout</a>
+                    {{else}}
                     <a class="nav-link" href="/login">Login</a>
+                    {{/if}}
+
                 </li>
                 <li class="nav-item ">
                     <a id="number-in-cart" class="nav-link" href="/cart"
@@ -76,6 +81,8 @@
             document.getElementById('number-in-cart').innerHTML = `${cartObject.length} In Cart`;
         }
     }
+
+
 
     //window.addEventListener("load", () => {
     //    const firebase = require('firebase');

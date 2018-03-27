@@ -116,10 +116,6 @@
                                          <div class="col-1"><u>Cost</u><br />$${serviceObj.cost}</div>`;
                 document.getElementById("serviceDetails").innerHTML = serviceInformation;
             }
-            else if (this.readyState == 4)
-            {
-                alert("Failure trying to open file to write. Status is: " + this.statusText);
-            }
         };
 
         httpRequest.open("GET", `/services-query?serviceId=${serviceId}`, true);

@@ -19,8 +19,6 @@
         <h1>Your Cart</h1>
         <div id="cart-content" class="col-12">You currently have no items in your cart!</div>
         <div class='nameList col-6'>
-            <!--I don't know why I had to do this, but just surrounding the anchor tag with a button didn't work. I wasn't able
-            To access it with CSS, unless it was inline, which we were told not to use, so...I used a form-->
             <form action="/products" method="get">
                 <button class="bottomButton" type="submit">
                     Continue Browsing
@@ -81,18 +79,25 @@
             var httpRequest = new XMLHttpRequest();
             httpRequest.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status === 200) {
-                    var successMessage = '<h1>Thank you for shopping with us!</h1>';
-                    successMessage += '<p> Your items will be available for pickup within 3 days.</p > ';
-                    document.getElementById('description').innerHTML = successMessage;
-                }
-                else if (this.readyState == 4) {
+                    var responseObj = JSON.parse(this.responseText);
+                    var responseMessage = '';
+                    if (responseObj.status === 'ok') {
+                        responseMessage = '<h1>Thank you for shopping with us!</h1>';
+                        responseMessage += '<p> Your items will be available for pickup within 3 days.</p > ';
+                        document.getElementById('description').innerHTML = responseMessage;
+                        sessionStorage.clear();
+                    } else {
+                        responseMessage = "Please login before confirming your order!";
+                        document.getElementById("cart-content").innerHTML = responseMessage;
+                    }
+                } else {
+                    
                 }
             };
 
             httpRequest.open("GET", `/confirm-purchase-query?name=${cartObject[i].name}&price=${cartObject[i].price}&picture=${cartObject[i].picture}`, true);
             httpRequest.send();
         }
-        sessionStorage.clear();
     }
 
     function removeFromCart(itemSlot)
