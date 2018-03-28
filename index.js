@@ -314,5 +314,5 @@ app.get('/remove-appointment-query', (req, res) => {
 app.use(express.static(__dirname + '/public'));
 
 app.listen(PORT, () => {
-    console.log('Server is listening on port: 3000');
+    console.log(`Server is listening on port: ${PORT}`);
 });
