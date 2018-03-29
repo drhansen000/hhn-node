@@ -37,12 +37,14 @@
 <script>
     window.addEventListener("load", function displayFutureAppointments() {
         var httpRequest = new XMLHttpRequest();
+        var appointmentDate = '';
         httpRequest.onreadystatechange = function () {
             if (this.readyState == 4 && this.status === 200) {
                 var futureAppointmentsObj = JSON.parse(this.responseText);
                 if (futureAppointmentsObj.length > 0) {
                     var futureAppointmentsMessage = '';
                     for (var i = 0; i < futureAppointmentsObj.length; i++) {
+                        appointmentDate = formatDate(futureAppointmentsObj[i].date);
                         futureAppointmentsMessage += '<div class="col-12 service">';
                         futureAppointmentsMessage += `<form action="/remove-appointment-query" method="get">`;
                         futureAppointmentsMessage += `<h5>Service: ${futureAppointmentsObj[i].service.name}</h5>`;
@@ -51,7 +53,7 @@
                         futureAppointmentsMessage += `<input type="hidden" name="serviceType" value="${futureAppointmentsObj[i].service.name}"/>`;
                         futureAppointmentsMessage += `<input type="hidden" name="serviceDetails" value="${futureAppointmentsObj[i].info}"/>`;
                         futureAppointmentsMessage += `<input type="hidden" name="appointmentId" value="${i}"/>`;
-                        futureAppointmentsMessage += `Planned for ${futureAppointmentsObj[i].date}`;
+                        futureAppointmentsMessage += `Planned for ${appointmentDate}`;
                         futureAppointmentsMessage += ` at ${futureAppointmentsObj[i].time}<br/>`;
                         futureAppointmentsMessage += `Stylist: Karli Hansen<br/>`;
                         futureAppointmentsMessage += `Cost: $${futureAppointmentsObj[i].service.cost}<br>`;
@@ -79,15 +81,17 @@
 
     window.addEventListener("load", function displayPastAppointments() {
         var httpRequest = new XMLHttpRequest();
+        var appointmentDate = '';
         httpRequest.onreadystatechange = function () {
             if (this.readyState == 4 && this.status === 200) {
                 var pastAppointmentsObj = JSON.parse(this.responseText);
                 if (pastAppointmentsObj.length > 0) {
                     var pastAppointmentsMessage = '';
                     for (var i = 0; i < pastAppointmentsObj.length; i++) {
+                        appointmentDate = formatDate(pastAppointmentsObj[i].date);
                         pastAppointmentsMessage += '<div class="col-12 service">';
                         pastAppointmentsMessage += `<h5>Service: ${pastAppointmentsObj[i].service.name}</h5>`;
-                        pastAppointmentsMessage += `Received on ${pastAppointmentsObj[i].date}`;
+                        pastAppointmentsMessage += `Received on ${appointmentDate}`;
                         pastAppointmentsMessage += ` at ${pastAppointmentsObj[i].time}<br/>`;
                         pastAppointmentsMessage += `Stylist: Karli Hansen<br/>`;
                     }
@@ -103,4 +107,8 @@
         httpRequest.open("GET", '/past-appointments-query', true);
         httpRequest.send();
     }, false);
+
+    function formatDate(date) {
+        return new Date(date);
+    }
 </script>
