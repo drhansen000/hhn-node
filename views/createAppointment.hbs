@@ -58,22 +58,22 @@
                     <div class="col-4">
                         Time<br />
                         <select id="selectTimeslot" name="time" required>
-                            <option value="9:00">9:00 am</option>
-                            <option value="9:30">9:30 am</option>
-                            <option value="10:00">10:00 am</option>
-                            <option value="10:30">10:30 am</option>
-                            <option value="11:00">11:00 am</option>
-                            <option value="11:30">11:30 am</option>
-                            <option value="12:00">12:00 pm</option>
-                            <option value="12:30">12:30 pm</option>
-                            <option value="13:00">1:00 pm</option>
-                            <option value="13:30">1:30 pm</option>
-                            <option value="14:00">2:00 pm</option>
-                            <option value="14:30">2:30 pm</option>
-                            <option value="15:00">3:00 pm</option>
-                            <option value="15:30">3:30 pm</option>
-                            <option value="16:00">4:00 pm</option>
-                            <option value="16:30">4:30 pm</option>
+                            <option value="9:00 am">9:00 am</option>
+                            <option value="9:30 am">9:30 am</option>
+                            <option value="10:00 am">10:00 am</option>
+                            <option value="10:30 am">10:30 am</option>
+                            <option value="11:00 am">11:00 am</option>
+                            <option value="11:30 am">11:30 am</option>
+                            <option value="12:00 pm">12:00 pm</option>
+                            <option value="12:30 pm">12:30 pm</option>
+                            <option value="1:00 pm">1:00 pm</option>
+                            <option value="1:30 pm">1:30 pm</option>
+                            <option value="2:00 pm">2:00 pm</option>
+                            <option value="2:30 pm">2:30 pm</option>
+                            <option value="3:00 pm">3:00 pm</option>
+                            <option value="3:30 pm">3:30 pm</option>
+                            <option value="4:00 pm">4:00 pm</option>
+                            <option value="4:30 pm">4:30 pm</option>
                         </select>
                     </div>
                 </div>
@@ -102,10 +102,8 @@
         var serviceId = document.getElementById('serviceSelector').value;
         console.log(serviceId);
         var httpRequest = new XMLHttpRequest();
-        httpRequest.onreadystatechange = function ()
-        {
-            if (this.readyState == 4 && this.status == 200)
-            {
+        httpRequest.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
                 var serviceObj = JSON.parse(this.responseText);
                 var serviceInformation = `<input type="hidden" name="service" value="${serviceObj.service}" />
                                          <input type="hidden" name="duration" value="${serviceObj.duration}" />
@@ -127,19 +125,15 @@
     {
         var appointmentDate = new Date(document.getElementById("appointmentDate").value);
         var today = new Date();
+        today.setDate(today.getDate() - 1);
 
-        if(appointmentDate.getDay() == 6)
-        {
+        if(appointmentDate.getDay() == 6) {
             alert("We're not open on Sunday!");
             return false;
-        }
-        else if (appointmentDate < today)
-        {
+        } else if (appointmentDate < today) {
             alert("Can't schedule an appointment for the past!");
             return false;
-        }
-        else
-        {
+        } else {
             return true;
         }
     }
@@ -151,30 +145,30 @@
             timeSlots = '<option> Closed </option>';
             document.getElementById('selectTimeslot').innerHTML = timeSlots;
         } else if (appointmentDate.getDay() == 5) {
-            timeSlots = `<option value="9:00">9:00 am </option>
-                        <option value= "9:30" > 9:30 am</option>
-                        <option value="10:00">10:00 am</option>
-                        <option value="10:30">10:30 am</option>
-                        <option value="11:00">11:00 am</option>
-                        <option value="11:30">11:30 am</option>`;
+            timeSlots = `<option value="9:00 am">9:00 am </option>
+                        <option value= "9:30 am" > 9:30 am</option>
+                        <option value="10:00 am">10:00 am</option>
+                        <option value="10:30 am">10:30 am</option>
+                        <option value="11:00 am">11:00 am</option>
+                        <option value="11:30 am">11:30 am</option>`;
             document.getElementById('selectTimeslot').innerHTML = timeSlots;
         } else {
-            timeSlots = `<option value="9:00">9:00 am</option>
-                        <option value= "9:30" > 9:30 am</option>
-                        <option value="10:00">10:00 am</option>
-                        <option value="10:30">10:30 am</option>
-                        <option value="11:00">11:00 am</option>
-                        <option value="11:30">11:30 am</option>
-                        <option value="12:00">12:00 pm</option>
-                        <option value="12:30">12:30 pm</option>
-                        <option value="13:00">1:00 pm</option>
-                        <option value="13:30">1:30 pm</option>
-                        <option value="14:00">2:00 pm</option>
-                        <option value="14:30">2:30 pm</option>
-                        <option value="15:00">3:00 pm</option>
-                        <option value="15:30">3:30 pm</option>
-                        <option value="16:00">4:00 pm</option>
-                        <option value="16:30">4:30 pm</option>`;
+            timeSlots = `<option value="9:00 am">9:00 am</option>
+                            <option value="9:30 am">9:30 am</option>
+                            <option value="10:00 am">10:00 am</option>
+                            <option value="10:30 am">10:30 am</option>
+                            <option value="11:00 am">11:00 am</option>
+                            <option value="11:30 am">11:30 am</option>
+                            <option value="12:00 pm">12:00 pm</option>
+                            <option value="12:30 pm">12:30 pm</option>
+                            <option value="1:00 pm">1:00 pm</option>
+                            <option value="1:30 pm">1:30 pm</option>
+                            <option value="2:00 pm">2:00 pm</option>
+                            <option value="2:30 pm">2:30 pm</option>
+                            <option value="3:00 pm">3:00 pm</option>
+                            <option value="3:30 pm">3:30 pm</option>
+                            <option value="4:00 pm">4:00 pm</option>
+                            <option value="4:30 pm">4:30 pm</option>`;
             document.getElementById('selectTimeslot').innerHTML = timeSlots;
         }
     }

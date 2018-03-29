@@ -109,6 +109,17 @@
     }, false);
 
     function formatDate(date) {
-        return new Date(date);
+        var days   = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var appointmentDate = new Date(date);
+        //for some reason it's off by one day
+        var appDay = days[(appointmentDate.getDay() + 1) % 7];
+        var appMonth = months[appointmentDate.getMonth()];
+        var appDate = appointmentDate.getDate() + 1;
+        var appYear = appointmentDate.getFullYear();
+
+        var formattedDate = `${appDay} ${appMonth} ${appDate}, ${appYear}`;
+
+        return formattedDate;
     }
 </script>
