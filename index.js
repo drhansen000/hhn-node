@@ -51,7 +51,6 @@ var getCurrentDate = () => {
 
 var loggedIn = (res, template) => {
     var user = firebase.auth().currentUser;
-    console.log(user);
     if (user) {
         res.render(template, { loggedIn: true });
     } else {
@@ -88,6 +87,28 @@ app.get('/appointments', (req, res) => {
 
 app.get('/cart', (req, res) => {
     loggedIn(res, 'cart.hbs');
+});
+
+app.get(['/manager', '/manager-appointments'], (req, res) => {
+    var user = firebase.auth().currentUser;
+    if (user && user.uid === 'h3XW3CguVARR6YfG1xBWSXbaduS2') {
+        console.log('Manage Appointments:  Manager logged in');
+        res.render('managerAppointments.hbs', { loggedIn: true });
+    } else {
+        console.log('Manage Appointments: Manager not logged in');
+        res.send({ status: 'Not Authorized!' });
+    }
+});
+
+app.get('/manager-clients', (req, res) => {
+    var user = firebase.auth().currentUser;
+    if (user && user.uid === 'h3XW3CguVARR6YfG1xBWSXbaduS2') {
+        console.log('Manage Clients: Manager logged in');
+        res.render('managerClients.hbs', { loggedIn: true });
+    } else {
+        console.log('Manage Clients: Manager not logged in');
+        res.send({ status: 'Not Authorized!' });
+    }
 });
 
 /*
@@ -177,21 +198,35 @@ app.get('/services-query', (req, res) => {
 });
 
 app.get('/manager-clients-query', (req, res) => {
-            var clientRef = db.db.ref('/person');
-            clientRef.once('value', (snapshot) => {
-                res.status(200).send(snapshot)
-            }).catch((e) => {
-                console.log(e);
+    var user = firebase.auth().currentUser;
+    if (user.uid === 'h3XW3CguVARR6YfG1xBWSXbaduS2') {
+        console.log('Client Query: Manager logged in');
+        var clientRef = db.db.ref('/person');
+        clientRef.once('value', (snapshot) => {
+            res.status(200).send(snapshot)
+        }).catch((e) => {
+            console.log(e);
             });
+    } else {
+        console.log('Client Query: Manager not logged in');
+        res.status(401).send({ status: 'Not Authorized!' });
+    }
 });
 
 app.get('/manager-appointments-query', (req, res) => {
-            var appRef = db.db.ref('/appointment');
-            appRef.once('value', (snapshot) => {
-                res.status(200).send(snapshot)
-            }).catch((e) => {
-                console.log(e);
-            });
+    var user = firebase.auth().currentUser;
+    if (user.uid === 'h3XW3CguVARR6YfG1xBWSXbaduS2') {
+        console.log('Appointment Query: Manager logged in');
+        var appRef = db.db.ref('/appointment');
+        appRef.once('value', (snapshot) => {
+            res.status(200).send(snapshot)
+        }).catch((e) => {
+            console.log(e);
+        });
+    } else {
+        console.log('Appointment Query: Manager not logged in');
+        res.status(401).send({ status: 'Not Authorized!' });
+    }
 });
 
 /*
@@ -241,22 +276,18 @@ app.post('/create-person-query', (req, res) => {
     }
 });
 
-app.get('/create-appointment-query', (req, res) => {
+app.post('/create-appointment-query', (req, res) => {
     var user = firebase.auth().currentUser;
-
     if (user) {
-        console.log(req.query);
+        console.log(req.body);
         var appRef = db.db.ref(`/appointment/${user.uid}`).push({
-            date: `${req.query.date}`,
-            info: `${req.query.info}`,
-            service: {
-                name: `${req.query.service}`,
-                cost: `${req.query.cost}`,
-                duration: `${req.query.duration}`
-            },
-            time: `${req.query.time}`
+            date: `${req.body.date}`,
+            info: `${req.body.info}`,
+            service: `${req.body.service} for ${req.body.duration} min at $${req.body.cost}`,
+            serviceName: `${req.body.service}`,
+            time: `${req.body.time}`
         });
-        res.render('appointments.hbs', { loggedIn: true });
+        res.status(200).send({ status: 'ok' });
     }
 });
 
@@ -279,10 +310,10 @@ app.get('/update-appointment-query', (req, res) => {
     }
 });
 
-app.get('/manager-update-client-query', (req, res) => {
+app.post('/manager-update-client-query', (req, res) => {
     var user = firebase.auth().currentUser;
 
-    if (user) {
+    if (user.ui === 'h3XW3CguVARR6YfG1xBWSXbaduS2') {
         var personRef = db.db.ref(`/person/${user.uid}`);
         personRef.set({
             name: `${req.query.name}`,
@@ -290,6 +321,8 @@ app.get('/manager-update-client-query', (req, res) => {
             phone: `${req.query.phone}`
         });
         res.status(200).send({ status: 'ok' });
+    } else {
+        res.status(401).send({ status: 'unauthorized' });
     }
 });
 

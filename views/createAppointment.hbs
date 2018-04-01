@@ -17,7 +17,7 @@
     <div id="description" class="col-8">
         <div class="col-12">
             <h1>Create an Appointment</h1>
-            <form action="/create-appointment-query" onsubmit="return validateForm()" method="get">
+            <form action="javascript:createAppointment()" onsubmit="return validateForm()" method="post">
                 <select id="serviceSelector" onchange="serviceDescription()" required>
                     <option value="0">Men's cut</option>
                     <option value="1">Women's cut</option>
@@ -41,9 +41,9 @@
                     <option value="19">Full face wax</option>
                 </select>
                 <div id="serviceDetails" class="col-12">
-                    <input type="hidden" name="service" value="Men's cut" />
-                    <input type="hidden" name="duration" value="60" />
-                    <input type="hidden" name="cost" value="30" />
+                    <input type="hidden" id="service" value="Men's cut" />
+                    <input type="hidden" id="duration" value="60" />
+                    <input type="hidden" id="cost" value="30" />
                     <div class="col-2"></div>
                     <div class="col-4"><u>Service Name</u><br />Men's cut</span></div>
                     <div class="col-2"><u>Duration</u><br />60</span> minutes</div>
@@ -79,7 +79,7 @@
                 </div>
                 <div class="col-12">
                     Additional Information for Service Provider<br />
-                    <textarea name="info" rows="4" cols="50" maxlength="250"></textarea>
+                    <textarea id="info" rows="4" cols="50" maxlength="250"></textarea>
                 </div>
                 <div class="col-12">
                     <button type="submit">Confirm Appointment</button>
@@ -97,6 +97,25 @@
 </html>
 
 <script>
+    function createAppointment() {
+        var httpRequest = new XMLHttpRequest();
+        var service = document.getElementById("service").value;
+        var duration = document.getElementById("duration").value;
+        var cost = document.getElementById("cost").value;
+        var appointmentDate = document.getElementById("appointmentDate").value;
+        var selectTimeslot = document.getElementById("selectTimeslot").value;
+        var info = document.getElementById("info").value;
+        httpRequest.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                window.location.href = '/appointments';
+            }
+        }
+
+        httpRequest.open('POST', '/create-appointment-query', true);
+        httpRequest.setRequestHeader('Content-Type', 'application/json');
+        httpRequest.send(JSON.stringify({ service: service, duration: duration, cost: cost, date: appointmentDate, time: selectTimeslot, info: info }));
+    }
+
     function serviceDescription()
     {
         var serviceId = document.getElementById('serviceSelector').value;
@@ -117,7 +136,6 @@
         };
 
         httpRequest.open("GET", `/services-query?serviceId=${serviceId}`, true);
-        //this is required for post method only
         httpRequest.send();
     }
 

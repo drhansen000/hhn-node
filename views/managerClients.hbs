@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css?family=Handlee" rel="stylesheet">
+    <link rel="stylesheet" href="bootstrap-css/bootstrap.min.css" />
+    <link rel="stylesheet" href="col.css" />
+    <link rel="stylesheet" href="HH&N.css" />
+    <link rel="stylesheet" href="future.css" />
+    <title>HH&N Manage Clients</title>
+</head>
+<body>
+    {{> manager-navbar}}
+    <div class="col-2">
+        <img class="panel-image" src="images/side-plant.png" />
+    </div>
+    <div id="description" class="col-8">
+        <div id="client-list">
+        </div>
+        <footer>
+            {{> footer}}
+        </footer>
+    </div>
+    <div class="col-2">
+        <img class="panel-image" src="images/side-plant.png" />
+    </div>
+</body>
+</html>
+<script>
+    window.addEventListener("load", function displayClients() {
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status === 200) {
+                var clientsObj = JSON.parse(this.responseText);
+                var clientMessage = '<h2>Client List</h2>';
+                for (var client in clientsObj) {
+                    clientMessage += `<h3>Name: ${clientsObj[client].name}</h3>
+                                      <p>Email: ${clientsObj[client].email}<br />
+                                      Phone: ${clientsObj[client].phone}</p>`;
+                }
+                document.getElementById('client-list').innerHTML = clientMessage;
+            }
+        }
+        httpRequest.open("GET", '/manager-clients-query', true);
+        httpRequest.send();
+    }, false);
+</script>

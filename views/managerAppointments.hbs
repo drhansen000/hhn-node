@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css?family=Handlee" rel="stylesheet">
+    <link rel="stylesheet" href="bootstrap-css/bootstrap.min.css" />
+    <link rel="stylesheet" href="col.css" />
+    <link rel="stylesheet" href="HH&N.css" />
+    <link rel="stylesheet" href="appointment.css" />
+    <title>HH&N Manage Appointments</title>
+</head>
+<body>
+    {{> manager-navbar}}
+    <div class="col-2">
+        <img class="panel-image" src="images/side-plant.png" />
+    </div>
+    <div id="description" class="col-8">
+        <div class="col-12">
+            <h1>Scheduled Appointments</h1>
+            <div id="future-appointments-content" class="col-12 service">
+            </div>
+        </div>
+        <footer>
+            {{> footer}}
+        </footer>
+    </div>
+    <div class="col-2">
+        <img class="panel-image" src="images/side-plant.png" />
+    </div>
+</body>
+</html>
+<script>
+    window.addEventListener("load", function displayFutureAppointments() {
+        var httpRequest = new XMLHttpRequest();
+        var appointmentDate = '';
+        var clientList = '';
+        var date = new Date();
+        var currentDate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+
+
+
+        httpRequest.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status === 200) {
+
+                //Inserted a second AJAX request in first. It's not pretty, but it was the best thing I could think of
+                var XHR2 = new XMLHttpRequest();
+                var futureAppointmentsMessage = '';
+                XHR2.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status === 200) {
+                        clientList = JSON.parse(this.responseText);
+                    }
+                }
+                //The rest of the code needs to wait until clientList is defined(it's deprecated, but it still works)
+                XHR2.open("GET", '/manager-clients-query', false);
+                XHR2.send();
+
+                //get JSON Object
+                var futureAppointmentsObj = JSON.parse(this.responseText);
+                for (var client in futureAppointmentsObj) {
+                    var clientName = clientList[client].name;
+                    //use client as key to create second object
+                    futureAppointmentsMessage += `<h2>Client's name: ${clientName}</h2>`;
+                    var clientObj = futureAppointmentsObj[client];
+                    for (var appointment in clientObj) {
+                        console.log('Appointment Date: ' + futureAppointmentsObj[client][appointment].date);
+                        console.log('Current Date: ' + currentDate);
+                        if (futureAppointmentsObj[client][appointment].date > currentDate) {
+                            appointmentDate = formatDate(futureAppointmentsObj[client][appointment].date);
+                            futureAppointmentsMessage += '<div class="col-12 service">';
+                            futureAppointmentsMessage += `<h5>${futureAppointmentsObj[client][appointment].service}</h5>`;
+                            futureAppointmentsMessage += `<input type="hidden" name="serviceDate" value="${futureAppointmentsObj[client][appointment].date}"/>`;
+                            futureAppointmentsMessage += `<input type="hidden" name="serviceTime" value="${futureAppointmentsObj[client][appointment].time}"/>`;
+                            futureAppointmentsMessage += `<input type="hidden" name="serviceType" value="${futureAppointmentsObj[client][appointment].service}"/>`;
+                            futureAppointmentsMessage += `<input type="hidden" name="serviceDetails" value="${futureAppointmentsObj[client][appointment].info}"/>`;
+                            futureAppointmentsMessage += `<input type="hidden" name="appointmentId" value=""/>`;
+                            futureAppointmentsMessage += `Planned for ${appointmentDate}`;
+                            futureAppointmentsMessage += ` at ${futureAppointmentsObj[client][appointment].time}<br/>`;
+                            futureAppointmentsMessage += `Stylist: Karli Hansen<br/>`;
+                            futureAppointmentsMessage += "</div>";
+                        }
+                    }
+                }
+                document.getElementById('future-appointments-content').innerHTML = futureAppointmentsMessage;
+            }
+        };
+
+        httpRequest.open("GET", '/manager-appointments-query', true);
+        httpRequest.send();
+    }, false);
+
+    function formatDate(date) {
+        var days   = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var appointmentDate = new Date(date);
+        //for some reason it's off by one day
+        var appDay = days[(appointmentDate.getDay() + 1) % 7];
+        var appMonth = months[appointmentDate.getMonth()];
+        var appDate = appointmentDate.getDate() + 1;
+        var appYear = appointmentDate.getFullYear();
+
+        var formattedDate = `${appDay} ${appMonth} ${appDate}, ${appYear}`;
+
+        return formattedDate;
+    }
+</script>
