@@ -30,14 +30,17 @@
 </body>
 </html>
 <script>
+    /*
+     * This function has 2 AJAX requests, one gets the client list and the other gets the appointment list. The
+     * second AJAX request waits until the first has completed, so the clients can be defined before the appointments
+     * are displayed. This function also filters the appointments to show only the future ones.  
+     */
     window.addEventListener("load", function displayFutureAppointments() {
         var httpRequest = new XMLHttpRequest();
         var appointmentDate = '';
         var clientList = '';
         var date = new Date();
-        var currentDate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-
-
+        var currentDate = formatCurrentDate(date);
 
         httpRequest.onreadystatechange = function () {
             if (this.readyState == 4 && this.status === 200) {
@@ -56,14 +59,17 @@
 
                 //get JSON Object
                 var futureAppointmentsObj = JSON.parse(this.responseText);
+                //iterate through object
                 for (var client in futureAppointmentsObj) {
                     var clientName = clientList[client].name;
                     //use client as key to create second object
                     futureAppointmentsMessage += `<h2>Client's name: ${clientName}</h2>`;
                     var clientObj = futureAppointmentsObj[client];
                     for (var appointment in clientObj) {
+                        // Error checking
                         console.log('Appointment Date: ' + futureAppointmentsObj[client][appointment].date);
                         console.log('Current Date: ' + currentDate);
+                        // Only get the appointments after today
                         if (futureAppointmentsObj[client][appointment].date > currentDate) {
                             appointmentDate = formatDate(futureAppointmentsObj[client][appointment].date);
                             futureAppointmentsMessage += '<div class="col-12 service">';
@@ -88,6 +94,9 @@
         httpRequest.send();
     }, false);
 
+    /*
+     * This function formats the dates received from the database in a user-friendly style.
+     */
     function formatDate(date) {
         var days   = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -101,5 +110,26 @@
         var formattedDate = `${appDay} ${appMonth} ${appDate}, ${appYear}`;
 
         return formattedDate;
+    }
+
+    /*
+     * This function error checks the current date, to make sure that it properly compares
+     * the appointment dates
+     */
+    function formatCurrentDate(date) {
+        var year = date.getFullYear();
+        var month;
+        var day;
+        if (date.getMonth() < 10) {
+            month = "0" + date.getMonth();
+        } else {
+            month = date.getMonth();
+        }
+        if (date.getDate() < 10) {
+            day = "0" + date.getDate();
+        } else {
+            day = date.getMonth();
+        }
+        return `${year}-${month}-${day}`;
     }
 </script>
